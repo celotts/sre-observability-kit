@@ -1,0 +1,130 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus-sre" },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "options": { "0": { "color": "red", "index": 1, "text": "DOWN / FAIL" }, "1": { "color": "green", "index": 0, "text": "HEALTHY" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "title": "Synthetic Checks Status (1=OK, 0=FAIL)",
+      "type": "stat",
+      "targets": [
+        { "expr": "sre_kit_sre_synthetic_check_up_ratio", "legendFormat": "{{journey}}", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus-sre" },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "options": { "0": { "color": "red", "index": 1, "text": "DEGRADED / DOWN" }, "1": { "color": "green", "index": 0, "text": "HEALTHY" } }, "type": "value" }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 6, "w": 8, "x": 8, "y": 0 },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "center",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "title": "PostgreSQL Deep Check Status",
+      "type": "stat",
+      "targets": [
+        { "expr": "sre_kit_sre_pg_check_up_ratio", "legendFormat": "{{check_name}}", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus-sre" },
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": { "h": 6, "w": 8, "x": 16, "y": 0 },
+      "id": 3,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "reduceOptions": { "calcs": ["lastNotNull"], "fields": "", "values": false },
+        "textMode": "auto"
+      },
+      "title": "PostgreSQL Blocked Queries",
+      "type": "stat",
+      "targets": [
+        { "expr": "sre_kit_sre_pg_blocked_queries_ratio", "legendFormat": "{{check_name}}", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus-sre" },
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "id": 4,
+      "title": "Synthetic Check Duration (p95)",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum by (le, journey) (rate(sre_kit_sre_synthetic_check_duration_seconds_bucket[5m])))", "legendFormat": "p95 {{journey}}", "refId": "A" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus-sre" },
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "id": 5,
+      "title": "Workflow Executions by Outcome",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum by (workflow, outcome) (rate(sre_kit_sre_workflow_executions_total[5m]))", "legendFormat": "{{workflow}} [{{outcome}}]", "refId": "A" }
+      ]
+    }
+  ],
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "title": "SRE Functional & Reliability Overview",
+  "uid": "sre-functional-overview",
+  "version": 1
+}

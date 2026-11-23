@@ -1,0 +1,81 @@
+apiVersion: 1
+
+groups:
+  - orgId: 1
+    name: SRE Functional Alerts
+    folder: SRE Observability
+    interval: 30s
+    rules:
+      - uid: alert-synthetic-journey-down
+        title: Synthetic Journey Failing
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-sre
+            model:
+              expr: sre_kit_sre_synthetic_check_up_ratio
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [1]
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 1m
+        labels:
+          severity: critical
+          team: sre
+        annotations:
+          summary: "Un synthetic check esta fallando ({{ $labels.journey }})"
+          description: "El recorrido funcional {{ $labels.journey }} reporta estado menor a 1 durante al menos 1 minuto."
+
+      - uid: alert-postgres-check-degraded
+        title: PostgreSQL Deep Check Degraded
+        condition: C
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: prometheus-sre
+            model:
+              expr: sre_kit_sre_pg_check_up_ratio
+              refId: A
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: __expr__
+            model:
+              conditions:
+                - evaluator:
+                    params: [1]
+                    type: lt
+                  operator:
+                    type: and
+                  query:
+                    params: [A]
+              type: threshold
+        noDataState: Alerting
+        execErrState: Alerting
+        for: 1m
+        labels:
+          severity: high
+          team: sre
+        annotations:
+          summary: "Chequeo profundo de PostgreSQL degradado ({{ $labels.check_name }})"
+          description: "PostgreSQL supero un umbral de latencia, conexiones o bloqueos en {{ $labels.check_name }}."

@@ -1,0 +1,39 @@
+defaults:
+  timeout_seconds: 3.0
+  interval_seconds: 20
+  max_latency_ms: 450.0
+  consecutive_failures_to_alert: 2
+
+database_checks:
+  - name: pg_transactional_db
+    enabled: true
+    max_latency_ms: 200.0
+    max_active_connections_ratio: 0.75
+    max_blocked_queries: 0
+
+synthetic_journeys:
+  - name: orders_service_status
+    enabled: true
+    method: GET
+    url: http://127.0.0.1:8088/ok
+    expected_status: 200
+    expected_json_key: status
+    expected_json_value: ok
+    max_latency_ms: 350.0
+    tags:
+      domain: operations
+      flow: order_verification
+      environment: sim
+
+  - name: orders_service_latency_budget
+    enabled: true
+    method: GET
+    url: http://127.0.0.1:8088/slow\?delay_ms\=120
+    expected_status: 200
+    expected_json_key: status
+    expected_json_value: ok
+    max_latency_ms: 400.0
+    tags:
+      domain: operations
+      flow: latency_check
+      environment: sim

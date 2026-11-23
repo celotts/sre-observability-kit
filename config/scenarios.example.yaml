@@ -1,0 +1,23 @@
+defaults:
+  timeout_seconds: 5.0
+  interval_seconds: 30
+  max_latency_ms: 500
+  consecutive_failures_to_alert: 2
+
+database_checks:
+  - name: pg_core_health
+    enabled: true
+    max_latency_ms: 250.0
+    max_active_connections_ratio: 0.8
+    max_blocked_queries: 0
+
+synthetic_journeys:
+  - name: prometheus_ready_check
+    enabled: true
+    method: GET
+    url: http://localhost:9090/-/healthy
+    expected_status: 200
+    max_latency_ms: 500.0
+    tags:
+      env: local
+      component: prometheus

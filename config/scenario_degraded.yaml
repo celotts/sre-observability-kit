@@ -1,0 +1,47 @@
+defaults:
+  timeout_seconds: 3.0
+  interval_seconds: 15
+  max_latency_ms: 300.0
+  consecutive_failures_to_alert: 2
+
+database_checks:
+  - name: pg_lab_strict_latency
+    enabled: true
+    max_latency_ms: 250.0
+    max_active_connections_ratio: 0.8
+    max_blocked_queries: 0
+
+synthetic_journeys:
+  - name: sim_slow_endpoint
+    enabled: true
+    method: GET
+    url: http://127.0.0.1:8088/slow?delay_ms=750
+    expected_status: 200
+    expected_json_key: status
+    expected_json_value: ok
+    max_latency_ms: 300.0
+    tags:
+      scenario: degraded_latency
+      suite: lab
+
+  - name: sim_flaky_endpoint
+    enabled: true
+    method: GET
+    url: http://127.0.0.1:8088/flaky?fail_rate=0.75
+    expected_status: 200
+    max_latency_ms: 500.0
+    tags:
+      scenario: degraded_availability
+      suite: lab
+
+  - name: sim_contract_mismatch
+    enabled: true
+    method: GET
+    url: http://127.0.0.1:8088/bad-contract
+    expected_status: 200
+    expected_json_key: status
+    expected_json_value: ok
+    max_latency_ms: 500.0
+    tags:
+      scenario: contract_break
+      suite: lab
